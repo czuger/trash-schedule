@@ -1,0 +1,19 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    mini_portile2 (2.4.0)
+    nokogiri (1.10.1)
+      mini_portile2 (~> 2.4.0)
+    odf-report (0.5.2)
+      nokogiri (>= 1.5.0)
+      rubyzip (~> 1.2.0)
+    rubyzip (1.2.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  odf-report
+
+BUNDLED WITH
+   1.16.3
