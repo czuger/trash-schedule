@@ -1,6 +1,7 @@
 require 'pp'
 require 'date'
 require 'odf-report'
+require 'i18n'
 
 require_relative 'lib/dates_handler'
 require_relative 'lib/in_charge'
@@ -17,6 +18,8 @@ class BuildFile
 
       dw = @dates.dates_for_current_week
 
+      pp dw
+
       r.add_field :date_jaune_out, dw.shift
       r.add_field :date_jaune_in, dw.shift
       r.add_field :date_bleue_out, dw.shift
@@ -32,5 +35,10 @@ class BuildFile
   end
 
 end
+
+I18n.load_path = Dir['config/*.yml']
+I18n.backend.load_translations
+I18n.available_locales = [:fr]
+I18n.locale = :fr
 
 BuildFile.new.go

@@ -26,7 +26,8 @@ class DatesHandler
   end
 
   def format_date(date)
-    date.strftime('%A, %-d %B à partir de %H heure')
+    # date.strftime('%A, %-d %B à partir de %H heure')
+    I18n.l(date, format: '%A, %-d %B à partir de %H heure')
   end
 
   def read_date_line(date_line)
