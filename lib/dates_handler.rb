@@ -1,5 +1,7 @@
 class DatesHandler
 
+  attr_reader :current_week_number, :next_week_number, :last_week_number, :out_j, :out_b, :in_j, :in_b
+
   def read
     @dates = File.open('data/dates.txt','r').readlines
     @dates.shift
@@ -8,21 +10,23 @@ class DatesHandler
     self
   end
 
-  def dates_for_current_week
-    out_j = format_date(@current_dates[:jaune] - (1/24.0)*6)
-    in_j = format_date(@current_dates[:jaune] + (1/24.0)*10)
-    out_b = format_date(@current_dates[:bleue] - (1/24.0)*6)
-    in_b = format_date(@current_dates[:bleue] + (1/24.0)*10)
-    [out_j, in_j, out_b, in_b]
-  end
-
   private
 
   def set_current_date
     while(@dates.first[:jaune] < DateTime.now)
       @dates.shift
     end
+
     @current_dates = @dates.first
+
+    @current_week_number = @current_dates[:jaune].cweek
+    @next_week_number = @current_dates[:jaune].next_day(7).cweek
+    @last_week_number = @current_dates[:jaune].next_day(14).cweek
+
+    @out_j = format_date(@current_dates[:jaune] - (1/24.0)*6)
+    @in_j = format_date(@current_dates[:jaune] + (1/24.0)*10)
+    @out_b = format_date(@current_dates[:bleue] - (1/24.0)*6)
+    @in_b = format_date(@current_dates[:bleue] + (1/24.0)*10)
   end
 
   def format_date(date)

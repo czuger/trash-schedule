@@ -16,18 +16,17 @@ class BuildFile
   def go
     report = ODFReport::Report.new('data/Courier model poubelles.odt') do |r|
 
-      dw = @dates.dates_for_current_week
-
-      pp dw
-
-      r.add_field :date_jaune_out, dw.shift
-      r.add_field :date_jaune_in, dw.shift
-      r.add_field :date_bleue_out, dw.shift
-      r.add_field :date_bleue_in, dw.shift
+      r.add_field :date_jaune_out, @dates.out_j
+      r.add_field :date_jaune_in, @dates.in_j
+      r.add_field :date_bleue_out, @dates.out_b
+      r.add_field :date_bleue_in, @dates.in_b
 
       r.add_field :resp_semaine_1, @in_charge.current_in_charge
       r.add_field :resp_semaine_2, @in_charge.next_in_charge
       r.add_field :resp_semaine_3, @in_charge.last_in_charge
+
+      r.add_field :next_week, @dates.next_week_number
+      r.add_field :last_week, @dates.last_week_number
     end
 
     report.generate('file.odt')
