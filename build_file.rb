@@ -56,10 +56,6 @@ class BuildFile
     DateTime.new(e[2].to_i + 2000, e[1].to_i, e[0].to_i)
   end
 
-  def read_in_charge
-    @in_charge = File.open('responsables.txt','r').readlines.map{ |e| e.strip }
-  end
-
 end
 
 pp BuildFile.new.go
