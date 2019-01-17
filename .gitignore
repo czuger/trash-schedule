@@ -3,6 +3,7 @@
 .~lock.*
 
 in_charges.txt
+last_in_charge.txt
 file.odt
 
 *.gem
