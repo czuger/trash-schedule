@@ -10,22 +10,23 @@ def read_file( name )
 
   data.each do |k, v|
     year, month = k.split( '-' )
+    p year, month
     a << v.map{ |day| Date.parse( "#{year}-#{month}-#{day}" ) }
   end
 
   a.flatten
 end
 
-bleu = read_file( :bleu )
-jaune = read_file( :jaune )
+blue = read_file( :blue )
+yellow = read_file( :yellow )
 
 mix = []
 
-while bleu.length > 0
-  b = bleu.shift
-  j = jaune.shift
+while blue.length > 0
+  b = blue.shift
+  j = yellow.shift
 
-  mix << { jaune: j, bleue: b }
+  mix << { yellow: j, blue: b }
 end
 
 File.open( 'data2/mixed.yaml', 'w' ) do |f|
