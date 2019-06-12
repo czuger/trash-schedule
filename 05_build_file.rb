@@ -16,6 +16,12 @@ class BuildFile
   def go
     report = ODFReport::Report.new('data/Courier model poubelles.odt') do |r|
 
+      r.add_table('TABLE_1', @list_of_itens, :header=>true) do |t|
+        t.add_column(:item_id, :id)
+        t.add_column(:description) { |item| "==> #{item.description}" }
+      end
+
+
       r.add_field :date_jaune_out, @dates.out_j
       r.add_field :date_jaune_in, @dates.in_j
       r.add_field :date_bleue_out, @dates.out_b

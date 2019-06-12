@@ -8,3 +8,7 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
 gem 'odf-report'
 gem 'i18n'
+
+gem 'pdf-reader'
+
+gem 'nokogiri'
