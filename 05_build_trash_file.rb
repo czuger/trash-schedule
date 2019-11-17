@@ -14,7 +14,7 @@ class BuildFile
     # @dates = DatesHandler.new.read
     # @in_charge = InCharge.new.read
 
-    @in_charge = [ 'Etage 1', 'Etage 0', 'Etage 3', 'Etage 2' ]
+    @in_charge = [ 'Kruger', 'Liebhard-Zuger', 'Richard' ]
   end
 
   def go
