@@ -8,11 +8,11 @@ require 'ostruct'
 class BuildFile
 
   def initialize
-    @in_charge = [ 'Etage 1', 'Etage 3', 'Etage 2' ]
+    @in_charge = [ 'Etage 2 - Kruger', 'Etage 1 - Liebhard-Zuger', 'Etage 3 - Safou-Tchibinda'  ]
   end
 
   def go
-    report = ODFReport::Report.new('data2/Cleaning schedule model.odt') do |r|
+    report = ODFReport::Report.new('modeles/Planning ménage.odt') do |r|
 
       next_sunday = ( Date.today + ( 7 - Date.today.wday ) )
 
@@ -27,7 +27,7 @@ class BuildFile
       end
     end
 
-    report.generate('data2/Cleaning schedule.odt')
+    report.generate('print/Planning ménage.odt')
   end
 
   def get_floor
