@@ -12,3 +12,5 @@ gem 'i18n'
 gem 'pdf-reader'
 
 gem 'nokogiri'
+
+gem 'activesupport'

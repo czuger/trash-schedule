@@ -1,6 +1,6 @@
 require 'pp'
 require 'date'
-require 'odf-report'
+# require 'odf-report'
 require 'i18n'
 require 'yaml'
 require 'ostruct'
@@ -30,12 +30,36 @@ class BuildFile
     }
   end
 
+  def go2
+    monday = Date.new( 2021, 3, 1 )
+    1.upto( 50 ).each do
+      tuesday = monday + 3
+
+      print_monday = monday
+      if @exceptions[print_monday]
+        print_monday = @exceptions[print_monday]
+      end
+      print_tuesday = tuesday
+
+      # p print_tuesday
+
+      if @exceptions[print_tuesday]
+        print_tuesday = @exceptions[print_tuesday]
+      end
+
+      out = "#{I18n.l(print_tuesday, format: '%A, %-d %B').humanize + (@exceptions[tuesday] ? ' *' : '')}\t#{I18n.l(print_monday, format: '%A, %-d %B').humanize + (@exceptions[monday] ? ' *' : '')}\t#{get_floor}"
+      puts out
+
+      monday = monday + 7
+    end
+  end
+
   def go
     report = ODFReport::Report.new('modeles/Courier model poubelles.odt') do |r|
 
       final_report = []
 
-      monday = Date.new( 2020, 3, 30 )
+      monday = Date.new( 2021, 3, 1 )
       1.upto( 40 ).each do
         tuesday = monday + 3
 
@@ -83,4 +107,4 @@ I18n.backend.load_translations
 I18n.available_locales = [:fr]
 I18n.locale = :fr
 
-BuildFile.new.go
+BuildFile.new.go2
