@@ -1,9 +1,87 @@
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib.units import cm
+from reportlab.pdfgen import canvas as pdfcanvas
+
+
+DOC_TITLE = "Planning Poubelles et Ménage 2026"
+DOC_SUBTITLE = "Sortie des poubelles et ménage de l'entrée"
+
+LEFT_MARGIN = 2 * cm
+RIGHT_MARGIN = 2 * cm
+TOP_MARGIN = 3.2 * cm      # room for the header drawn on every page
+BOTTOM_MARGIN = 2.2 * cm   # room for the footer drawn on every page
+
+
+class NumberedCanvas(pdfcanvas.Canvas):
+    """
+    Canvas that draws the header and the footer on every page.
+
+    Pages are buffered so the footer can display "Page x / y" once the
+    total number of pages is known.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self) -> None:
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self) -> None:
+        total_pages = len(self._saved_page_states)
+
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_header()
+            self.draw_footer(total_pages)
+            super().showPage()
+
+        super().save()
+
+    def draw_header(self) -> None:
+        """Draw the title, the subtitle and the separator line on the page."""
+        width, height = self._pagesize
+
+        self.saveState()
+
+        self.setFont('Helvetica-Bold', 16)
+        self.setFillColor(colors.black)
+        self.drawCentredString(width / 2.0, height - 1.8 * cm, DOC_TITLE)
+
+        self.setFont('Helvetica-Oblique', 9)
+        self.setFillColor(colors.grey)
+        self.drawCentredString(width / 2.0, height - 2.4 * cm, DOC_SUBTITLE)
+
+        self.setStrokeColor(colors.grey)
+        self.setLineWidth(0.5)
+        self.line(LEFT_MARGIN, height - 2.7 * cm, width - RIGHT_MARGIN, height - 2.7 * cm)
+
+        self.restoreState()
+
+    def draw_footer(self, total_pages: int) -> None:
+        """Draw the separator line and the page number on the page."""
+        width = self._pagesize[0]
+
+        self.saveState()
+
+        self.setStrokeColor(colors.grey)
+        self.setLineWidth(0.5)
+        self.line(LEFT_MARGIN, 1.7 * cm, width - RIGHT_MARGIN, 1.7 * cm)
+
+        self.setFont('Helvetica', 8)
+        self.setFillColor(colors.grey)
+        self.drawCentredString(
+            width / 2.0,
+            1.2 * cm,
+            f"Page {self._pageNumber} / {total_pages}"
+        )
+
+        self.restoreState()
 
 
 def load_calendar(json_file: str) -> Dict[str, Dict[str, List[str]]]:
@@ -64,13 +142,17 @@ def create_pdf(calendar: Dict[str, Dict[str, List[str]]], output_file: str) -> N
         calendar: Weekly calendar dictionary
         output_file: Output PDF file path
     """
-    doc = SimpleDocTemplate(output_file, pagesize=A4)
+    doc = SimpleDocTemplate(
+        output_file,
+        pagesize=A4,
+        leftMargin=LEFT_MARGIN,
+        rightMargin=RIGHT_MARGIN,
+        topMargin=TOP_MARGIN,
+        bottomMargin=BOTTOM_MARGIN,
+        title=DOC_TITLE,
+        author="Les voisins"
+    )
     elements = []
-    styles = getSampleStyleSheet()
-
-    # Title
-    title = Paragraph("Planning Poubelles et Ménage 2026", styles['Title'])
-    elements.append(title)
 
     # Get sorted weeks
     weeks = sorted(calendar.keys())
@@ -93,7 +175,8 @@ def create_pdf(calendar: Dict[str, Dict[str, List[str]]], output_file: str) -> N
         data.append([week_num, bleue_dates, jaune_dates, str(etage), menage])
 
     # Create table
-    table = Table(data, colWidths=[50, 130, 130, 60, 60])
+    # repeatRows=1 redraws the header row at the top of every page
+    table = Table(data, colWidths=[50, 130, 130, 60, 60], repeatRows=1)
 
     # Style table
     style = TableStyle([
@@ -115,7 +198,7 @@ def create_pdf(calendar: Dict[str, Dict[str, List[str]]], output_file: str) -> N
     elements.append(table)
 
     # Build PDF
-    doc.build(elements)
+    doc.build(elements, canvasmaker=NumberedCanvas)
 
 
 # Load calendar and create PDF
